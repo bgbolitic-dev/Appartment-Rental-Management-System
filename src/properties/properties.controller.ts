@@ -6,37 +6,37 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class PropertiesController {
   constructor(private propertiesService: PropertiesService) {}
 
-  // Get all users (protected)
+  // Get all properties (protected)
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAll() {
     return this.propertiesService.getAll();
   }
 
-  // // Get single user by id (protected)
+  // Get single property by property_id (protected)
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async getOne(@Param('id') id: string) {
-    return this.propertiesService.findById(+id);
-  }  
+  @Get(':property_id')
+  async getOne(@Param('property_id') property_id: string) {
+    return this.propertiesService.findById(+property_id);
+  }
 
-  // Create user (open - for demo)
+  // Create property (open - for demo)
   @Post()
-  async create(@Body() body: {property_name: string; address: string; city:string; zip_code:string; id: string}) {
-    return this.propertiesService.createProperties(body.property_name, body.address, body.city, body.zip_code, body.id);
+  async create(@Body() body: { property_name: string; address: string; city: string; zip_code: string; landlord_id: number }) {
+    return this.propertiesService.createProperties(body.property_name, body.address, body.city, body.zip_code, body.landlord_id);
   }
 
-  // // Update user (protected)
+  // Update property (protected)
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() body: any) {
-    return this.propertiesService.updateProperties(+id, body);
+  @Put(':property_id')
+  async update(@Param('property_id') property_id: string, @Body() body: any) {
+    return this.propertiesService.updateProperties(+property_id, body);
   }
 
-  // // Delete user (protected)
+  // Delete property (protected)
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.propertiesService.deleteProperties(+id);
+  @Delete(':property_id')
+  async remove(@Param('property_id') property_id: string) {
+    return this.propertiesService.deleteProperties(+property_id);
   }
 }

@@ -9,21 +9,13 @@ export class PropertiesService {
 
   private pool = () => this.db.getPool();
 
-  async createProperties(property_name: string, address: string, city:string, zip_code:string, id = '?') {
+  async createProperties(property_name: string, address: string, city: string, zip_code: string, landlord_id: number) {
     const [result] = await this.pool().execute<OkPacket>(
-      'INSERT INTO properties (property_name, address, city, zip_code, id) VALUES (?, ?, ?, ?, ?)',
-      [property_name, address, city, zip_code, id],
+      'INSERT INTO properties (property_name, address, city, zip_code, landlord_id) VALUES (?, ?, ?, ?, ?)',
+      [property_name, address, city, zip_code, landlord_id],
     );
-    return { property_id: result.insertId, property_name, address, city, zip_code};
+    return { property_id: result.insertId, property_name, address, city, zip_code, landlord_id };
   }
-
-  // async findByUsername(username: string) {
-  //   const [rows] = await this.pool().execute<RowDataPacket[]>(
-  //     'SELECT id, username, password, role, refresh_token FROM users WHERE username = ?',
-  //     [username],
-  //   );
-  //   return rows[0];
-  // }
 
   async findById(property_id: number) {
     const [rows] = await this.pool().execute<RowDataPacket[]>(
@@ -33,6 +25,14 @@ export class PropertiesService {
     return rows[0];
   }
 
+     // async findByUsername(username: string) {
+   //   const [rows] = await this.pool().execute<RowDataPacket[]>(
+   //     'SELECT id, username, password, role, refresh_token FROM users WHERE username = ?',
+   //     [username],
+   //   );
+   //   return rows[0];
+   // }
+
   async getAll() {
     const [rows] = await this.pool().execute<RowDataPacket[]>(
       'SELECT * FROM properties',
@@ -40,9 +40,10 @@ export class PropertiesService {
     return rows;
   }
 
-  async updateProperties(property_id: number, partial: { property_name?: string; address?: string; city?:string; zip_code?:string;}) {
+  async updateProperties(property_id: number, partial: { property_name?: string; address?: string; city?: string; zip_code?: string; landlord_id?: number }) {
     const fields: string[] = [];
     const values: any[] = [];
+
     if (partial.property_name) {
       fields.push('property_name = ?');
       values.push(partial.property_name);
@@ -59,27 +60,36 @@ export class PropertiesService {
       fields.push('zip_code = ?');
       values.push(partial.zip_code);
     }
+    if (partial.landlord_id !== undefined) {
+      fields.push('landlord_id = ?');
+      values.push(partial.landlord_id);
+    }
+
     if (fields.length === 0) return await this.findById(property_id);
+
     values.push(property_id);
     const sql = `UPDATE properties SET ${fields.join(', ')} WHERE property_id = ?`;
     await this.pool().execute(sql, values);
     return this.findById(property_id);
   }
 
-  async deleteProperties(id: number) {
-    const [res] = await this.pool().execute<OkPacket>('DELETE FROM properties WHERE property_id = ?', [id]);
+  async deleteProperties(property_id: number) {
+    const [res] = await this.pool().execute<OkPacket>(
+      'DELETE FROM properties WHERE property_id = ?',
+      [property_id],
+    );
     return res.affectedRows > 0;
   }
 
-//   async setRefreshToken(id: number, refreshToken: string | null) {
-//     await this.pool().execute('UPDATE users SET refresh_token = ? WHERE id = ?', [refreshToken, id]);
-//   }
+   //   async setRefreshToken(id: number, refreshToken: string | null) {
+ //     await this.pool().execute('UPDATE users SET refresh_token = ? WHERE id = ?', [refreshToken, id]);
+ //   }
 
-//   async findByRefreshToken(refreshToken: string) {
-//     const [rows] = await this.pool().execute<RowDataPacket[]>(
-//       'SELECT id, username, role FROM users WHERE refresh_token = ?',
-//       [refreshToken],
-//     );
-//     return rows[0];
-//   }
+ //   async findByRefreshToken(refreshToken: string) {
+ //     const [rows] = await this.pool().execute<RowDataPacket[]>(
+ //       'SELECT id, username, role FROM users WHERE refresh_token = ?',
+ //       [refreshToken],
+ //     );
+ //     return rows[0];
+ //   }
 }

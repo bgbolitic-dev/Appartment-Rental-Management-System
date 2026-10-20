@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
+import { LandlordsModule } from './landlords/landlords.module';
 import { PropertiesModule } from './properties/properties.module';
 import { UnitsModule } from './units/units.module';
 import { TenantsModule } from './tenants/tenants.module';
@@ -10,6 +11,6 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, PropertiesModule, UnitsModule, TenantsModule, LeasesModule, Rent_PaymentsModule,Maintenance_RequestsModule, AuthModule],
+  imports: [DatabaseModule, UsersModule, LandlordsModule, PropertiesModule, UnitsModule, TenantsModule, LeasesModule, Rent_PaymentsModule,Maintenance_RequestsModule, AuthModule],
 })
 export class AppModule {}
